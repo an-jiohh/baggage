@@ -22,7 +22,7 @@ public class FoodCompareService {
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(url)
-                .defaultHeader("Authorization", "KakaoAK 216c010df8a27d34179fba35e0a162e7")
+                .defaultHeader("Authorization", "KakaoAK ")
                 .build();
 
         KaKaoResponseDto kaKaoResponseDto = webClient.get()
@@ -78,12 +78,5 @@ public class FoodCompareService {
         }
         return sum / shopLists.size();
     }
-
-
-
-
-
-
-
 
 }
