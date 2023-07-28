@@ -1,8 +1,10 @@
 package com.example.baggage.jungchan.controller;
 
-import com.example.baggage.bungchan.service.CrSevice;
 import com.example.baggage.dto.CompareRequestDto;
+import com.example.baggage.dto.FoodRequestDto;
 import com.example.baggage.dto.FoodResponseDto;
+import com.example.baggage.dto.KaKaoResponseDto;
+import com.example.baggage.jungchan.service.gpt.FoodCompareService;
 import com.example.baggage.jungchan.service.gpt.GptService;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
@@ -44,8 +46,18 @@ public class CompareController {
     }
 
     @PostMapping("/food/compare")
-    public FoodResponseDto foodCompare(){ //정찬 = 파라미터 알아서 넣어주세요.
+    public FoodResponseDto foodCompare(@RequestBody @Valid FoodRequestDto foodRequestDto){ //정찬 = 파라미터 알아서 넣어주세요.
         //정찬, 병찬 = 파라미터 및 리턴값 조율
+        FoodCompareService foodCompareService = new FoodCompareService();
+        KaKaoResponseDto kaKaoResponseDto = foodCompareService.searchPlaceByKeyword(foodRequestDto);
+
+        System.out.println("@@@@@@TEST@@@@@@@");
+        //KakaoResponsDto.getDocuments가 리스트로 이루어져있음 그 안에 매장명, 매장 ID(플레이스 뒤에 붙는 숫자), 매장 주소 들어있음.
+        for(int i=0; i < kaKaoResponseDto.getDocuments().size(); i++){
+            System.out.println(kaKaoResponseDto.getDocuments().get(i).toString());
+        }
+
+
 
         //병찬 = 크롤링
 
