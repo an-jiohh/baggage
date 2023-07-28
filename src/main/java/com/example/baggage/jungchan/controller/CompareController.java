@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,6 +26,7 @@ public class CompareController {
 
     private final ChatgptService chatgptService;
     private final GptService gptService;
+    private final FoodCompareService foodCompareService;
 
     @PostMapping("/taxi/compare")
     public CompareResponse taxiCompare(@RequestBody @Valid CompareRequestDto compareRequestDto){
@@ -47,8 +50,8 @@ public class CompareController {
 
     @PostMapping("/food/compare")
     public FoodResponseDto foodCompare(@RequestBody @Valid FoodRequestDto foodRequestDto){ //정찬 = 파라미터 알아서 넣어주세요.
+        FoodResponseDto foodResponseDto = new FoodResponseDto();
         //정찬, 병찬 = 파라미터 및 리턴값 조율
-        FoodCompareService foodCompareService = new FoodCompareService();
         KaKaoResponseDto kaKaoResponseDto = foodCompareService.searchPlaceByKeyword(foodRequestDto);
 
         System.out.println("@@@@@@TEST@@@@@@@");
@@ -57,15 +60,45 @@ public class CompareController {
             System.out.println(kaKaoResponseDto.getDocuments().get(i).toString());
         }
 
-
-
         //병찬 = 크롤링
 
-        //정찬이형 주요로직
 
+
+        //정찬
+        //임시 데이터 코드
+
+//        List<FoodResponseDto.ShopList> shopLists = new ArrayList<>();
+//        for(int i=5; i>0; i--){
+//            FoodResponseDto.ShopList shop = new FoodResponseDto.ShopList();
+//            shop.setShopname("asd");
+//            shop.setShopmenu("asf");
+//            shop.setShopprice(10000 + (i*1000));
+//            shop.setScore(String.format("%d",i));
+//            shopLists.add(shop);
+//        }
+//        foodResponseDto.setShoplist(shopLists);
+
+
+        //최소가격, 최대가격, 평균가격
+        int max = foodCompareService.findMax(foodResponseDto.getShoplist());
+        int min = foodCompareService.findMin(foodResponseDto.getShoplist());
+        int avg = foodCompareService.findAverage(foodResponseDto.getShoplist());
+
+        foodResponseDto.setMaxprice(max);
+        foodResponseDto.setMinprice(min);
+        foodResponseDto.setAvgprice(avg);
+
+        //평점순으로 리스트 나열
+        foodCompareService.sortByRating(foodResponseDto);
+
+        //gpt 에게 평가 (return prompt)
+        String prompt = gptService.createFoodPrompt(foodResponseDto,foodRequestDto.getPrice());   //nationalprice, maxprice, minprice
+        String resultPrompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user",prompt)));
+
+        foodResponseDto.setPrompt(resultPrompt);
         //지호 주요로직
 
-        return new FoodResponseDto();
+        return foodResponseDto;
     }
 
     @Data
