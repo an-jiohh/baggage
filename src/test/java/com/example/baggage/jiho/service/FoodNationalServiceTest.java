@@ -35,8 +35,8 @@ class FoodNationalServiceTest {
         Assertions.assertThat(foodNationalService.getNationalPrice(foodRequestDto)).isEqualTo(resultPrice);
 
         //
-        KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress("35.945529210679155", "126.68047569999999");
-        kakaoAddressDto.toString();
+        KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress("37.5546", "126.9754");
+        System.out.println(kakaoAddressDto.toString());
 
 
         foodNationalService.getNationalPrice(foodRequestDto);

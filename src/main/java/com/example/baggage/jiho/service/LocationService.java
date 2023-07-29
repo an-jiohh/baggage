@@ -11,7 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @RequiredArgsConstructor
 public class LocationService {
 
-    @Value("$(kakao.kakaoAK)")
+    @Value("${kakao.kakaoAK}")
     private String kakaoAk;
 
     private String Addressurl = "https://dapi.kakao.com/v2/local/geo/coord2address";
