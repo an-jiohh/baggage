@@ -1,7 +1,6 @@
 package com.example.baggage.bungchan.service;
 
 import com.example.baggage.dto.LocationDTO;
-import com.example.baggage.dto.LodgmentDTO;
 import com.example.baggage.dto.TaxiRequestDTO;
 import com.example.baggage.dto.TexiPredict;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -10,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.transform.Transformers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
@@ -18,14 +16,10 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 
 import javax.net.ssl.SSLException;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class BcService {
-
+public class BcTexiService {
     private final ObjectMapper objectMapper;
 
     @Value("${naver.clientId}")
@@ -107,28 +101,6 @@ public class BcService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
-
-    }
-
-    @PersistenceContext
-    private EntityManager em;
-
-    public LodgmentDTO lodgmentCompare(String name, String region){
-
-        String query = "SELECT license , address , name FROM LODGING "
-                + "WHERE address LIKE CONCAT('%', :region, '%') AND name = :name";
-//        System.out.println("name:" + name +"," + "region:" + region);
-
-        List<LodgmentDTO> result = em.createNativeQuery(query)
-                .setParameter("region", region)
-                .setParameter("name", name)
-                .unwrap(org.hibernate.query.NativeQuery.class)
-                .setResultTransformer(Transformers.aliasToBean(LodgmentDTO.class))
-                .getResultList();
-
-        if (!result.isEmpty())
-            return result.get(0);
-        return  null;
 
     }
 }
