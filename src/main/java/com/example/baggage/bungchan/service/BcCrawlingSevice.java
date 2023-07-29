@@ -110,6 +110,10 @@ public class BcCrawlingSevice {
                 } catch (NoSuchElementException e) {
 //                    System.out.println(id+"[메뉴정보]메뉴 or 가격이 없음");
                     continue;
+                } catch (NumberFormatException e)
+                {
+                    System.out.println(id+"변환 오류");
+                    continue;
                 }
                 return null;
             }
