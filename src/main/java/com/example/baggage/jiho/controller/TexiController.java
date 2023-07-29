@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.*;
 public class TexiController {
     private final ReportService reportService;
 
-    @PostMapping("/texi/report")
+    @PostMapping("/taxi/report")
     public ReportResponseDto texiReport(@RequestBody ReportRequestDto request){
         String prompt = reportService.createPrompt(request);
+
         String report = reportService.createReport(request, prompt);
+
         log.info(report);
         return new ReportResponseDto(report);
     }

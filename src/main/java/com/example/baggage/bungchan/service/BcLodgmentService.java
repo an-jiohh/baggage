@@ -15,13 +15,11 @@ public class BcLodgmentService {
     @PersistenceContext
     private EntityManager em;
 
-    //오류코드 추가필요
 
     public LodgmentDTO lodgmentCompare(String name, String region){
 
         String query = "SELECT license , address , name FROM LODGING "
                 + "WHERE address LIKE CONCAT('%', :region, '%') AND name = :name";
-//        System.out.println("name:" + name +"," + "region:" + region);
 
         List<LodgmentDTO> result = em.createNativeQuery(query)
                 .setParameter("region", region)
@@ -31,7 +29,14 @@ public class BcLodgmentService {
                 .getResultList();
 
         if (!result.isEmpty())
+        {
+            result.get(0).setCode(0);
             return result.get(0);
-        return  null;
+        }else {
+            LodgmentDTO lodgmentDTO = new LodgmentDTO();
+            lodgmentDTO.setCode(1);
+            return lodgmentDTO;
+        }
+
     }
 }

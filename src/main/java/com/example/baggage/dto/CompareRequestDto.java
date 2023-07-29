@@ -15,13 +15,13 @@ public class CompareRequestDto {
 
         private int usetime;
         private int fee;
-        private int distance;
+        private double distance;
     }
     @Getter
     public static class Predict{
         private int usetime;
         private int fee;
-        private int distance;
+        private double distance;
 
     }
 }
