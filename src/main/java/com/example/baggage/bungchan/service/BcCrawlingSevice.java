@@ -10,6 +10,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -24,7 +25,8 @@ public class BcCrawlingSevice {
     // Properties 설정
     public static String WEB_DRIVER_ID = "webdriver.chrome.driver";
     // WebDriver 경로
-    public static String WEB_DRIVER_PATH = "D:/chromedriver_win32/chromedriver.exe";
+    @Value("${crawling.web_driver_path}")
+    public String WEB_DRIVER_PATH;
 
     private void chrome() {
         System.setProperty(WEB_DRIVER_ID, WEB_DRIVER_PATH);
