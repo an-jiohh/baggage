@@ -26,21 +26,19 @@ class FoodNationalServiceTest {
 
     @Test
     void getNationalPrice() {
-        FoodRequestDto foodRequestDto = new FoodRequestDto();
 
-        foodRequestDto.setName("백반"); //있으면 그대로 리턴
+        String menu = "백반"; //있으면 그대로 리턴
         int resultPrice = 12750;
-        Assertions.assertThat(foodNationalService.getNationalPrice(foodRequestDto)).isEqualTo(resultPrice);
+        Assertions.assertThat(foodNationalService.getNationalPrice(menu)).isEqualTo(resultPrice);
 
-        foodRequestDto.setName("회"); //실존값 : 모둠회, 검색값 : 회 -> 비슷한거있으면 비슷한것으로
+        menu = "회"; //실존값 : 모둠회, 검색값 : 회 -> 비슷한거있으면 비슷한것으로
         resultPrice = 38651;
-        Assertions.assertThat(foodNationalService.getNationalPrice(foodRequestDto)).isEqualTo(resultPrice);
+        Assertions.assertThat(foodNationalService.getNationalPrice(menu)).isEqualTo(resultPrice);
 
-        foodRequestDto.setName("똥"); //없으면 0리턴
+        menu = "똥"; //없으면 0리턴
         resultPrice = 0;
-        Assertions.assertThat(foodNationalService.getNationalPrice(foodRequestDto)).isEqualTo(resultPrice);
+        Assertions.assertThat(foodNationalService.getNationalPrice(menu)).isEqualTo(resultPrice);
 
-        foodNationalService.getNationalPrice(foodRequestDto);
     }
 
     @Test

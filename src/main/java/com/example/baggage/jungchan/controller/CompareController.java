@@ -1,10 +1,10 @@
 package com.example.baggage.jungchan.controller;
 
 import com.example.baggage.bungchan.service.BcCrawlingSevice;
-import com.example.baggage.dto.CompareRequestDto;
-import com.example.baggage.dto.FoodRequestDto;
-import com.example.baggage.dto.FoodResponseDto;
-import com.example.baggage.dto.KaKaoResponseDto;
+import com.example.baggage.dto.*;
+import com.example.baggage.jiho.service.FoodNationalService;
+import com.example.baggage.jiho.service.LocationService;
+import com.example.baggage.jiho.service.MobomService;
 import com.example.baggage.jungchan.service.gpt.FoodCompareService;
 import com.example.baggage.jungchan.service.gpt.GptService;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
@@ -29,6 +29,9 @@ public class CompareController {
     private final GptService gptService;
     private final FoodCompareService foodCompareService;
     private final BcCrawlingSevice bcCrawlingSevice;
+    private final FoodNationalService foodNationalService;
+    private final LocationService locationService;
+    private final MobomService mobomService;
 
     @PostMapping("/taxi/compare")
     public CompareResponse taxiCompare(@RequestBody @Valid CompareRequestDto compareRequestDto){
@@ -91,13 +94,24 @@ public class CompareController {
 
         //평점순으로 리스트 나열
         foodCompareService.sortByRating(foodResponseDto);
+        System.out.println("foodRequestDto.getName() = " + foodRequestDto.getName());
+
+        //locationalprice 정보주입
+        foodResponseDto.setNationalprice(foodNationalService.getNationalPrice(foodRequestDto.getName()));
 
         //gpt 에게 평가 (return prompt)
         String prompt = gptService.createFoodPrompt(foodResponseDto,foodRequestDto.getPrice());   //nationalprice, maxprice, minprice
         String resultPrompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user",prompt)));
 
         foodResponseDto.setPrompt(resultPrompt);
+
         //지호 주요로직
+        KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress(foodRequestDto.getLatitude(),foodRequestDto.getLongitude());
+        String address = "0000 000 000"; //없을 경우를 대비 실존하지 않는 값 대입
+        address = locationService.getRegion123Merge(kakaoAddressDto);
+
+        List<FoodResponseDto.MobomList> mobomLists = mobomService.getMobomData(address, foodRequestDto.getName());
+        foodResponseDto.setMobomlist(mobomLists);
 
         return foodResponseDto;
     }
