@@ -4,6 +4,7 @@ import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.dto.KaKaoResponseDto;
 import org.openqa.selenium.By;
 
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -66,12 +67,20 @@ public class BcCrawlingSevice {
             //메뉴 이름, 메뉴 가격  정보.
             List<WebElement> menu_info = menu_list.findElements(By.cssSelector(".info_menu"));
 
-            //평점
-            WebElement grade = driver.findElement(By.cssSelector(".grade_star > .num_rate"));
-            //평점 문자열뒤 (점) 제거
-            String score = grade.getText().replace("점", "");
-            ShopListeDto.setScore(score);
 
+
+            try{
+                //평점
+                WebElement grade = driver.findElement(By.cssSelector(".grade_star > .num_rate"));
+                //평점 문자열뒤 (점) 제거
+                String score = grade.getText().replace("점", "");
+                ShopListeDto.setScore(score);
+            }
+            catch (NoSuchElementException e) {
+                //평점 없을시 0,
+                System.out.println(id +"/평점 없음");
+                ShopListeDto.setScore("0");
+            }
 
             //리뷰
             //WebElement review_list = driver.findElement(By.cssSelector(".list_evaluation"));
@@ -84,30 +93,33 @@ public class BcCrawlingSevice {
 
                     // 문자 앞("추천") 제거
                     String menuname = menu_info.get(i).findElement(By.cssSelector("span.loss_word")).getText().replace("추천\n", "");
-
                     //가격 String to int 처리
                     int menuprice = Integer.parseInt(menu_info.get(i).findElement(By.cssSelector(".price_menu")).getText().replace(",", ""));
 
+                    if(menuname != null && menuprice != 0) {
+                        //메뉴, 가격 둘중 하나가 없어도 추가X
+                        ShopListeDto.setShopmenu(menuname);
+                        ShopListeDto.setShopprice(menuprice);
+                        //메뉴 하나만 추출
+                        return ShopListeDto;
+                    }
 //                    System.out.println("이름 : " + menuname + "  " + "가격 : " + menuprice);
-                    ShopListeDto.setShopmenu(menuname);
-                    ShopListeDto.setShopprice(menuprice);
 
-                    //메뉴 하나만 추출
-                    break;
-                } catch (Exception e) {
-                    //메뉴, 가격 둘중 하나가 없어도 추가X
-                    System.out.println(id+"메뉴 or 가격이 없음");
+                } catch (NoSuchElementException e) {
+//                    System.out.println(id+"[메뉴정보]메뉴 or 가격이 없음");
+                    continue;
                 }
+                return null;
             }
-            return ShopListeDto;
 
-        } catch (Exception e) {
+
+
+        } catch (NoSuchElementException e) {
 //            System.out.println(e);
-            System.out.println(id+"경로 or 메규 없음");
+            System.out.println(id+"경로문제 or 메뉴 없음");
             // 없는 경로 또는, 메뉴 가격이 없는경우
-
-            return null;
         }
+        return null;
     }
 
     public  FoodResponseDto crawling(KaKaoResponseDto kaKaoResponseDto)
