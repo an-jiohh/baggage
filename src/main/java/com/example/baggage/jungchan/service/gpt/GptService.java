@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
 @Setter
 public class GptService {
 
-    public String createTaxiPrompt(int realDistance, int realFee, int realUsetime, int predictDistance, int predictFee, int predictUsetime ) {
+    public String createTaxiPrompt(double realDistance, int realFee, int realUsetime, double predictDistance, int predictFee, int predictUsetime ) {
         String prompt = String.format(
                 "택시비 바가지는 택시요금을 원래의 가격보다 부당하게 높게 받는것을 택시요금 바가지라고 해.[output.]\n" +
-                        "예상 요금: %d 원, 예상 거리는 %d km, 예상 시간은 %d 분이였어. 실제 요금: %d 원, 거리는 %d km, 예상 시간은 %d 분이 걸렸어. [output.]\n" +
+                        "예상 요금: %d 원, 예상 거리는 %f km, 예상 시간은 %d 분이였어. 실제 요금: %d 원, 거리는 %f km, 예상 시간은 %d 분이 걸렸어. [output.]\n" +
                         "택시비 바가지 우선순위 기준은" +
                         "1.실제요금이 예상 요금보다 30%% 이상 높은지\n " +
                         "2.실제거리가 예상 거리보다 30%% 이상 많은지\n" +

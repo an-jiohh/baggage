@@ -1,5 +1,6 @@
 package com.example.baggage.jungchan.controller;
 
+import com.example.baggage.bungchan.service.BcCrawlingSevice;
 import com.example.baggage.dto.CompareRequestDto;
 import com.example.baggage.dto.FoodRequestDto;
 import com.example.baggage.dto.FoodResponseDto;
@@ -27,21 +28,22 @@ public class CompareController {
     private final ChatgptService chatgptService;
     private final GptService gptService;
     private final FoodCompareService foodCompareService;
+    private final BcCrawlingSevice bcCrawlingSevice;
 
     @PostMapping("/taxi/compare")
     public CompareResponse taxiCompare(@RequestBody @Valid CompareRequestDto compareRequestDto){
 
         //Request바디의 값을 받아서 매핑
-        int realDistance = compareRequestDto.getReal().getDistance();
+        double realDistance = compareRequestDto.getReal().getDistance();
         int realFee = compareRequestDto.getReal().getFee();
         int realUsetime = compareRequestDto.getReal().getUsetime();
 
-        int predictDistance = compareRequestDto.getPredict().getDistance();
+        double predictDistance = compareRequestDto.getPredict().getDistance();
         int predictFee = compareRequestDto.getPredict().getFee();
         int predictUsetime = compareRequestDto.getPredict().getUsetime();
 
         //매핑된 값을 chatGPT에게 넘겨줌
-        String parameter =  gptService.createTaxiPrompt(realDistance, realFee, realUsetime, predictDistance, predictFee, predictUsetime);;
+        String parameter =  gptService.createTaxiPrompt(realDistance, realFee, realUsetime, predictDistance, predictFee, predictUsetime);
 
         String prompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user",parameter)));
 
@@ -50,7 +52,6 @@ public class CompareController {
 
     @PostMapping("/food/compare")
     public FoodResponseDto foodCompare(@RequestBody @Valid FoodRequestDto foodRequestDto){ //정찬 = 파라미터 알아서 넣어주세요.
-        FoodResponseDto foodResponseDto = new FoodResponseDto();
         //정찬, 병찬 = 파라미터 및 리턴값 조율
         KaKaoResponseDto kaKaoResponseDto = foodCompareService.searchPlaceByKeyword(foodRequestDto);
 
@@ -61,7 +62,7 @@ public class CompareController {
         }
 
         //병찬 = 크롤링
-
+        FoodResponseDto foodResponseDto =  bcCrawlingSevice.crawling(kaKaoResponseDto);
 
 
         //정찬

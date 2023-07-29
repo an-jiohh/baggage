@@ -24,4 +24,5 @@ public class LodgmentDTO {
     @Column(name = "NAME")
     private String NAME;
 
+    private int code;
 }
