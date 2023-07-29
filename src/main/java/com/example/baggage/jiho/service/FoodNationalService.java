@@ -1,13 +1,11 @@
 package com.example.baggage.jiho.service;
 
-import com.example.baggage.dto.FoodRequestDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentMap;
 
 @Service
 @Slf4j
@@ -15,9 +13,9 @@ public class FoodNationalService {
 
     private Map<String, Integer> nationList = new HashMap<>(); //읽기만 할것으로 HashMap사용
 
-    public int getNationalPrice(FoodRequestDto foodRequestDto){
+    public int getNationalPrice(String menu){
         for (String s : nationList.keySet()) {
-            if(s.contains(foodRequestDto.getName())){
+            if(s.contains(menu)){
                 return nationList.get(s);
             }
         }
