@@ -18,7 +18,7 @@ public class FoodResponseDto {
 
     private List<ShopList> shoplist;
 
-    private List<ShopList> mobomlist;
+    private List<MobomList> mobomlist;
 
     @Getter
     @Setter
@@ -47,7 +47,7 @@ public class FoodResponseDto {
 
     @Getter
     @Setter
-    private static class mobomlist {
+    public static class MobomList {
         private String shopname;
         private String adress;
         private String headmenu;

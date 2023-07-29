@@ -36,8 +36,8 @@ public class ProductsService {
     }
 
     public ProductInnerDto getProductInfo(ProductsRequestDto request){
-        String localItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), request.getP_countycode());
-        String allItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), "");
+        String localItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), "", request.getP_productclscode());
+        String allItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), "", request.getP_productclscode());
 
         ProductsDto localItemObject = productsDtoParser(localItem);
         ProductsDto allItemObject = productsDtoParser(allItem);
@@ -71,7 +71,7 @@ public class ProductsService {
         return productsDto;
     }
 
-    public String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode,String p_countycode){
+    public String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode,String p_countycode, String p_productclscode){
         WebClient webClient = WebClient
                 .builder()
                 .baseUrl(url)
@@ -82,13 +82,13 @@ public class ProductsService {
                         .queryParam("p_cert_key", pCertKey) //인증 key
                         .queryParam("p_cert_id", pCertId) //인증자 id
                         .queryParam("p_returntype", "json") //return type
-                        .queryParam("p_productclscode", "01") //01:소매, 02:도매
+                        .queryParam("p_productclscode", "0"+p_productclscode) //01:소매, 02:도매
                         //.queryParam("p_regday", "") //조회날짜 -> 생략하면 오늘
                         .queryParam("p_itemcategorycode", p_itemcategorycode) //부류코드
                         .queryParam("p_itemcode", p_itemcode) //품목코드
                         .queryParam("p_kindcode", p_kindcode) //품종코드
                         //.queryParam("p_productrankcode","{url}") //등급코드 -> 생략
-                        .queryParam("p_countycode", p_countycode) //시군구코드
+                        //.queryParam("p_countycode", p_countycode) //시군구코드
                         .queryParam("p_convert_kg_yn", "Y") //kg단위 환산여부
                         .build())
                 .exchangeToMono(clientResponse -> {

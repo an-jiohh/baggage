@@ -3,6 +3,7 @@ package com.example.baggage.domain;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.br.CPF;
 
 import javax.persistence.*;
@@ -11,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 @Getter
 @Setter
 @Entity
+@ToString
 public class Mobom {
 
     @Id
@@ -25,6 +27,9 @@ public class Mobom {
 
     @Column
     private String HEADMENU;
+
+    public Mobom() {
+    }
 
     public Mobom(String shopName, String address, String headMenu) {
         this.SHOPNAME = shopName;

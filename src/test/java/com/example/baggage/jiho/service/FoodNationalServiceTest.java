@@ -1,11 +1,15 @@
 package com.example.baggage.jiho.service;
 
+import com.example.baggage.domain.Mobom;
 import com.example.baggage.dto.FoodRequestDto;
+import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.dto.KakaoAddressDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,6 +21,8 @@ class FoodNationalServiceTest {
 
     @Autowired
     private LocationService locationService;
+    @Autowired
+    private MobomService mobomService;
 
     @Test
     void getNationalPrice() {
@@ -34,11 +40,35 @@ class FoodNationalServiceTest {
         resultPrice = 0;
         Assertions.assertThat(foodNationalService.getNationalPrice(foodRequestDto)).isEqualTo(resultPrice);
 
-        //
+        foodNationalService.getNationalPrice(foodRequestDto);
+    }
+
+    @Test
+    void kakaoAdressTest(){
         KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress("37.5546", "126.9754");
         System.out.println(kakaoAddressDto.toString());
+    }
 
+    @Test
+    void $getMobomTest(){
+        //response 처리
+        String x = "35.9617";
+        String y = "126.9773";
+        String TestMenu = "치킨";
 
-        foodNationalService.getNationalPrice(foodRequestDto);
+        String address = "111111111"; //값을 검색해도 안나오게 임의의 값
+        KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress(x, y);
+        address = locationService.getRegion123Merge(kakaoAddressDto);
+
+        System.out.println("address = " + address);
+
+        List<FoodResponseDto.MobomList> mobomLists = mobomService.getMobomData(address, TestMenu);
+        
+        FoodResponseDto foodResponseDto = new FoodResponseDto();
+        foodResponseDto.setMobomlist(mobomLists);
+
+        for (FoodResponseDto.MobomList mobomList : foodResponseDto.getMobomlist()) {
+            System.out.println("mobomList.getHeadmenu() = " + mobomList.getHeadmenu());
+        }
     }
 }

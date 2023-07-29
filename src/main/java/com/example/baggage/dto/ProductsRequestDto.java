@@ -14,4 +14,6 @@ public class ProductsRequestDto {
     private String p_kindcode;
     private String p_countycode;
     private String userprice;
+
+    private String p_productclscode;
 }
