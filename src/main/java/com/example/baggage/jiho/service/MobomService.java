@@ -1,35 +1,38 @@
 package com.example.baggage.jiho.service;
 
 import com.example.baggage.domain.Mobom;
+import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.jiho.repository.MobomRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MobomService {
 
     private final MobomRepository mobomRepository;
 
-    //@PostConstruct
-    public void initMobomData() throws IOException {
-        if(mobomRepository.count() == 0){
-            ClassPathResource resource = new ClassPathResource("mobomList.csv");
-            List<Mobom> mobomList = Files.readAllLines(resource.getFile().toPath(), StandardCharsets.UTF_8).stream()
-                    .map(line -> {
-                        String[] split = line.split(",");
-                        System.out.println("split = " + split);
-                        return new Mobom(split[1], split[3], split[5]);
-                    }).collect(Collectors.toList());
-            mobomRepository.saveAll(mobomList);
+    public List<FoodResponseDto.MobomList> getMobomData(String address, String menu){
+        List<Mobom> mobomList = mobomRepository.findByADDRESSContainsAndHEADMENUContains(address, menu);
+        if(mobomList.size()==0){ //값이 없으면 모든것으로 검색
+            mobomList = mobomRepository.findByADDRESSContainsAndHEADMENUContains(address, "");
         }
+        List<FoodResponseDto.MobomList> returnLists = new ArrayList<>(10);
+        int count = 0;
+        for (Mobom mobom : mobomList) {
+            if (count++ == 5) break;
+            FoodResponseDto.MobomList mobomshop = new FoodResponseDto.MobomList();
+            mobomshop.setAdress(mobom.getADDRESS());
+            mobomshop.setHeadmenu(mobom.getHEADMENU());
+            mobomshop.setShopname(mobom.getSHOPNAME());
+            returnLists.add(mobomshop);
+        }
+        return returnLists;
     }
 }

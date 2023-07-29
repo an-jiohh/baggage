@@ -32,4 +32,18 @@ public class LocationService {
 
         return kakaoAddressDto;
     }
+
+    public String getRegion123Merge(KakaoAddressDto kakaoAddressDto){//도 + 시 + 동 정보가져오는 함수
+        String address = null;
+        if(kakaoAddressDto.getMeta().getTotal_count() == 1){ //값이 존재하면
+            KakaoAddressDto.Document document = kakaoAddressDto.getDocuments()[0];
+            if(document.getAddress() != null){
+                String region1depthName = document.getAddress().getRegion_1depth_name();
+                String region2depthName = document.getAddress().getRegion_2depth_name();
+                String region3depthName = document.getAddress().getRegion_3depth_name();
+                address = String.format(region1depthName + " " + region2depthName + " " + region3depthName);
+            }
+        }
+        return address;
+    }
 }
