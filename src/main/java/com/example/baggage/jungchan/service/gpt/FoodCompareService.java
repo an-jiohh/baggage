@@ -4,6 +4,7 @@ import com.example.baggage.dto.FoodRequestDto;
 import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.dto.KaKaoResponseDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -15,15 +16,17 @@ import java.util.List;
 public class FoodCompareService {
 
 //    public List<KaKaoResponseDto>
-    static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
-
+static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
+    @Value("${kakao.kakaoAK}")
+    private String kakaoAk;
 
     public KaKaoResponseDto searchPlaceByKeyword(FoodRequestDto foodRequestDto){
 
         WebClient webClient = WebClient.builder()
                 .baseUrl(url)
-                .defaultHeader("Authorization", "KakaoAK ")
+                .defaultHeader("Authorization", "KakaoAK " + kakaoAk)
                 .build();
+
 
         KaKaoResponseDto kaKaoResponseDto = webClient.get()
                 .uri(uriBuilder -> uriBuilder
