@@ -7,6 +7,10 @@ import lombok.Setter;
 @Setter
 public class ReportRequestDto {
     private String carnum;
+
+    private String start;
+    private String end;
+
     private UsageData real;
     private UsageData predict;
 
@@ -15,7 +19,7 @@ public class ReportRequestDto {
     public static class UsageData {
         private int usetime;
         private int fee;
-        private int distance;
+        private double distance;
     }
 
 }

@@ -40,8 +40,8 @@ public class ReportService {
     public String createReport(ReportRequestDto request, String prompt){
         return String.format(
                 "탑승 일자 : " + LocalDate.now() + "\n" +
-                        "탑승 장소 : " + "탑승장소 api필요" + "\n" +
-                        "도착 장소 : " + "탑승장소 api필요" + "\n" +
+                        "탑승 장소 : " + request.getStart() + "\n" +
+                        "도착 장소 : " + request.getEnd() + "\n" +
                         "차량 번호 : " + request.getCarnum() + "\n" +
                         "신고 내용 : 부당요금 신고\n" +
                         "신고자 : “사용자 기입”" + "\n\n" +
@@ -52,7 +52,7 @@ public class ReportService {
     private String getString() {
         return String.format("Based on the information provided by the user in the json format, we would like to write a report text about unfair taxi fares.\n" +
                 "\n" +
-                "{\"carnum\":\"12가5468\",\"real\":{\"usetime\":30,\"fee\":5000,\"distance\":50},\"predict\":{\"usetime\":40,\"fee\":10000,\"distance\":100}\n" +
+                "{\"start\": \"군산시 미룡동 365-23\",\"end\" : \"군산시 미룡동 365-23\",\"carnum\":\"12가5468\",\"real\":{\"usetime\":30,\"fee\":5000,\"distance\":50},\"predict\":{\"usetime\":40,\"fee\":10000,\"distance\":100}\n" +
                 "\n" +
                 "Data in the following json format are given.\n" +
                 "Real is information on the actual taxi on board, and user time means boarding time, fee means fare, and distance means travel distance.\n" +
@@ -62,7 +62,7 @@ public class ReportService {
                 "\n" +
                 "Write the last word that you want to report it\n" +
                 "\n" +
-                "We also provided a taxi number, but don't include it in the report\n" +
+                "We also provided a taxi number,start_point and end_point, but don't include it in the report\n" +
                 "\n" +
                 "Write a text message to report unfair taxi fares in Korean based on the information.\n" +
                 "\n" +
