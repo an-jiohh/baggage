@@ -53,7 +53,7 @@ public class BcCrawlingSevice {
         }
     }
 
-    public FoodResponseDto.ShopList urlCrawling(String id ,String shopname, String kategorie){
+    public FoodResponseDto.ShopList urlCrawling(String id ,String shopname, String Category_name){
 
         //식당이름, 메뉴이름, 메뉴 가격, 평점, 리스트
         FoodResponseDto.ShopList ShopListeDto = new FoodResponseDto.ShopList();
@@ -102,7 +102,7 @@ public class BcCrawlingSevice {
                         //메뉴, 가격 둘중 하나가 없어도 추가X
 
                         // 카테고리 가 포함된 메뉴 이름만 추가
-                        if(menuname.contains(kategorie))
+                        if(menuname.contains(Category_name))
                         {
                             ShopListeDto.setShopmenu(menuname);
                             ShopListeDto.setShopprice(menuprice);
@@ -133,7 +133,7 @@ public class BcCrawlingSevice {
         return null;
     }
 
-    public  FoodResponseDto crawling(KaKaoResponseDto kaKaoResponseDto, String kategorie)
+    public  FoodResponseDto crawling(KaKaoResponseDto kaKaoResponseDto , String Category_name)
     {
         chrome();
 
@@ -145,7 +145,7 @@ public class BcCrawlingSevice {
 
         for(int i = 0 ; i<documents.size();i++)
         {
-            FoodResponseDto.ShopList shopList = urlCrawling(documents.get(i).getId(), documents.get(i).getPlace_name(), kategorie);
+            FoodResponseDto.ShopList shopList = urlCrawling(documents.get(i).getId(), documents.get(i).getPlace_name(), Category_name);
             if (shopList != null)
                 foodshopList.add(shopList);
         }

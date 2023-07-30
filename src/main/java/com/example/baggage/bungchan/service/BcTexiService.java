@@ -1,8 +1,7 @@
 package com.example.baggage.bungchan.service;
 
-import com.example.baggage.dto.LocationDTO;
-import com.example.baggage.dto.TaxiRequestDTO;
-import com.example.baggage.dto.TexiPredict;
+import com.example.baggage.dto.TaxiRequestDto;
+import com.example.baggage.dto.TexiPredictResponsDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,10 +27,10 @@ public class BcTexiService {
     @Value("${naver.clientSecret}")
     private String clientSecret;
 
-    public TexiPredict calculateTaxiCost(TaxiRequestDTO requestDTO)
+    public TexiPredictResponsDto calculateTaxiCost(TaxiRequestDto requestDTO)
     {
-        LocationDTO startLocation = requestDTO.getStart();
-        LocationDTO endLocation = requestDTO.getEnd();
+        TaxiRequestDto.LocationDTO startLocation = requestDTO.getStart();
+        TaxiRequestDto.LocationDTO endLocation = requestDTO.getEnd();
         //경도 위도 순
 
         //시작 위치(경도 위도)
@@ -95,7 +94,7 @@ public class BcTexiService {
             int taxiFare = jsonNode.get("route").get("trafast").get(0).get("summary").get("taxiFare").asInt();
 
 
-            TexiPredict returnDTO = new TexiPredict(duration,taxiFare,distance);
+            TexiPredictResponsDto returnDTO = new TexiPredictResponsDto(duration,taxiFare,distance);
             return returnDTO;
 
         } catch (JsonProcessingException e) {
