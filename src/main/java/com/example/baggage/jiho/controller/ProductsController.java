@@ -5,6 +5,7 @@ import com.example.baggage.dto.ProductsRequestDto;
 import com.example.baggage.dto.ProductsResponseDto;
 import com.example.baggage.jiho.service.ProductsService;
 import com.example.baggage.jungchan.service.gpt.GptService;
+import com.example.baggage.temp.ProductCompareService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ProductsController {
 
     private final GptService gptService;
+    private final ProductCompareService productCompareService;
 
     private final ProductsService productsService;
     @PostMapping("/products/compare")
@@ -33,9 +35,7 @@ public class ProductsController {
         productInfo.setUserprice(Integer.parseInt(request.getUserprice()));
 
         //정찬쓰 코드 여기 입력
-        String prompt = gptService.createProductPrompt(productInfo);
-
-        ProductsResponseDto productsResponseDto = new ProductsResponseDto(prompt, "위험(입력필요)", productInfo.getPrice(), productInfo.getWeekprice(), productInfo.getUserprice());
+        ProductsResponseDto productsResponseDto = productCompareService.compareService(productInfo);
 
         return productsResponseDto;
     }

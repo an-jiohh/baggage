@@ -2,6 +2,7 @@ package com.example.baggage.temp;
 
 import com.example.baggage.dto.ProductInnerDto;
 
+import com.example.baggage.dto.ProductsResponseDto;
 import com.example.baggage.jungchan.service.gpt.GptService;
 import io.github.flashvayne.chatgpt.dto.chat.MultiChatMessage;
 import io.github.flashvayne.chatgpt.service.ChatgptService;
@@ -21,7 +22,7 @@ public class ProductCompareService {
     private final ChatgptService chatgptService;
 
 
-    public ResponseDto compareService(ProductInnerDto productInnerDto) {
+    public ProductsResponseDto compareService(ProductInnerDto productInnerDto) {
         //1. 바가지 판단(rank) 로직
         String rank = compareRank(productInnerDto);
 
@@ -30,7 +31,7 @@ public class ProductCompareService {
         String inputPrompt = gptService.createProductPrompt(productInnerDto);
         String resultPrompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user", inputPrompt)));
 
-        return (new ResponseDto(resultPrompt, rank,
+        return (new ProductsResponseDto(resultPrompt, rank,
                 productInnerDto.getPrice(), productInnerDto.getWeekprice(),
                 productInnerDto.getUserprice(), productInnerDto.getMonthprice(), productInnerDto.getNationalprice()));
     }
@@ -66,21 +67,4 @@ public class ProductCompareService {
 
         return rank;
     }
-
-
-
-    @Data
-    @AllArgsConstructor
-    private static class ResponseDto {
-        private String prompt;
-        private String rank;
-        private int price;
-        private int weekprice;
-        private int userprice;
-        private int monthprice;
-        private int nationalprice;
-
-    }
-
-
 }
