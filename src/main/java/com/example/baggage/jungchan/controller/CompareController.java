@@ -65,7 +65,7 @@ public class CompareController {
         }
 
         //병찬 = 크롤링
-        FoodResponseDto foodResponseDto =  bcCrawlingSevice.crawling(kaKaoResponseDto);
+        FoodResponseDto foodResponseDto =  bcCrawlingSevice.crawling(kaKaoResponseDto, foodRequestDto.getName());
 
 
         //정찬
