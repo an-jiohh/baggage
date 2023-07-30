@@ -15,8 +15,11 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import javax.annotation.PostConstruct;
 import java.security.PublicKey;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -27,31 +30,67 @@ public class ProductsService {
     private String pCertKey;
     @Value("${products.p_cert_id}")
     private String pCertId;
-    private String url = "http://www.kamis.or.kr/service/price/xml.do";
+    private String url = "https://www.kamis.or.kr/service/price/xml.do";
 
     private final ObjectMapper objectMapper;
+
+    private final Map<String, String> cityMap = new HashMap<>();
+
+    @PostConstruct
+    private void initCityMap(){
+        cityMap.put("1101", "서울");
+        cityMap.put("2100", "부산");
+        cityMap.put("2200", "대구");
+        cityMap.put("2300", "인천");
+        cityMap.put("2401", "광주");
+        cityMap.put("2501", "대전");
+        cityMap.put("2601", "울산");
+        cityMap.put("3111", "수원");
+        cityMap.put("3211", "춘천");
+        cityMap.put("3311", "청주");
+        cityMap.put("3511", "전주");
+        cityMap.put("3711", "포항");
+        cityMap.put("3911", "제주");
+        cityMap.put("3113", "의정부");
+        cityMap.put("3613", "순천");
+        cityMap.put("3714", "안동");
+        cityMap.put("3814", "창원");
+        cityMap.put("3145", "용인");
+    }
 
     public ProductInnerDto getCowProductInfo(ProductsRequestDto requestDto){
         return new ProductInnerDto();
     }
 
-    public ProductInnerDto getProductInfo(ProductsRequestDto request){
-        String localItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), "", request.getP_productclscode());
+    public ProductInnerDto getProductInfo(ProductsRequestDto request) throws RuntimeException{
         String allItem = getItemInfo(request.getP_itemcategorycode(), request.getP_itemcode(), request.getP_kindcode(), "", request.getP_productclscode());
 
-        ProductsDto localItemObject = productsDtoParser(localItem);
         ProductsDto allItemObject = productsDtoParser(allItem);
 
-        List<ProductsDto.Item> items = localItemObject.getData().getItem();
-        ProductsDto.Item localInfo = items.get(items.size() - 1);
+        List<ProductsDto.Item> items = allItemObject.getData().getItem();
+        ProductsDto.Item allInfo = items.get(0); //첫번쨰가 평균
+        ProductsDto.Item localInfo = items.get(0); //값이 없을 경우 평균으로 대치
+        for (ProductsDto.Item item : items) {
+            if(item.getCountyname().equals(cityMap.get(request.getP_countycode()))){
+                System.out.println("item.toString() = " + item.toString());
+                localInfo = item;
+            }
+        }
+
         ProductInnerDto productInnerDto = new ProductInnerDto();
         productInnerDto.setUserprice(Integer.parseInt(request.getUserprice()));
 
+        //숫자사이 콤마, 값없을때 - 삭제
+        int price = Integer.parseInt(localInfo.getPrice().replace(",", "").replace("-", ""));
+        int weekPrice = Integer.parseInt(localInfo.getWeekprice().replace(",", "").replace("-", ""));
+        int monthPrice = Integer.parseInt(localInfo.getMonthprice().replace(",", "").replace("-", ""));
+        int nationalPrice = Integer.parseInt(allInfo.getPrice().replace(",", "").replace("-", ""));
+
         productInnerDto.setProductName(localInfo.getItemname());
-        productInnerDto.setPrice(Integer.parseInt(localInfo.getPrice().replace(",","")));
-        productInnerDto.setWeekprice(Integer.parseInt(localInfo.getWeekprice().replace(",","")));
-        productInnerDto.setMonthprice(Integer.parseInt(localInfo.getMonthprice().replace(",","")));
-        productInnerDto.setNationalprice(Integer.parseInt(allItemObject.getData().getItem().get(0).getPrice().replace(",","")));
+        productInnerDto.setPrice(price);
+        productInnerDto.setWeekprice(weekPrice);
+        productInnerDto.setMonthprice(monthPrice);
+        productInnerDto.setNationalprice(nationalPrice);
 
         System.out.println("productInnerDto = " + productInnerDto);
         return productInnerDto;
@@ -63,6 +102,7 @@ public class ProductsService {
             productsDto = objectMapper.readValue(json, ProductsDto.class);
         } catch (MismatchedInputException e){
             log.error("no data");
+            throw new RuntimeException(e);
         } catch (JsonMappingException e) {
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
@@ -71,61 +111,33 @@ public class ProductsService {
         return productsDto;
     }
 
-    public String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode,String p_countycode, String p_productclscode){
+    public String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode, String p_countycode, String p_productclscode){
         WebClient webClient = WebClient
                 .builder()
                 .baseUrl(url)
                 .build();
-        ClientResponse report = webClient.get()
+        String report = webClient.get()
                 .uri(uriBuilder -> uriBuilder.path("")
                         .queryParam("action", "ItemInfo") //지역별 품목별 도.소매가격정보 API 선택
                         .queryParam("p_cert_key", pCertKey) //인증 key
                         .queryParam("p_cert_id", pCertId) //인증자 id
                         .queryParam("p_returntype", "json") //return type
                         .queryParam("p_productclscode", "0"+p_productclscode) //01:소매, 02:도매
-                        //.queryParam("p_regday", "") //조회날짜 -> 생략하면 오늘
                         .queryParam("p_itemcategorycode", p_itemcategorycode) //부류코드
                         .queryParam("p_itemcode", p_itemcode) //품목코드
                         .queryParam("p_kindcode", p_kindcode) //품종코드
-                        //.queryParam("p_productrankcode","{url}") //등급코드 -> 생략
-                        //.queryParam("p_countycode", p_countycode) //시군구코드
+                        //.queryParam("p_countycode", p_countycode)
                         .queryParam("p_convert_kg_yn", "Y") //kg단위 환산여부
                         .build())
-                .exchangeToMono(clientResponse -> {
-                    if (clientResponse.statusCode().is3xxRedirection()) {
-                        // 3xx Redirection 처리
-                        String newUrl = clientResponse.headers().header("Location").get(0);
-                        return webClient.get().uri(newUrl).exchange();
-                    } else {
-                        return Mono.just(clientResponse);
-                    }
-                })
+                .retrieve()
+                .bodyToMono(String.class)
                 .block();
 
-        return report.bodyToMono(String.class).block();
+        return report;
     }
 
     public String getCowItemInfo(){
-        WebClient webClient = WebClient
-                .builder()
-                .baseUrl(url)
-                .build();
-        ClientResponse report = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("")
-                        .queryParam("action", "ItemInfo") //지역별 품목별 도.소매가격정보 API 선택
-                        .queryParam("p_cert_key", pCertKey) //인증 key
-                        .build())
-                .exchangeToMono(clientResponse -> {
-                    if (clientResponse.statusCode().is3xxRedirection()) {
-                        // 3xx Redirection 처리
-                        String newUrl = clientResponse.headers().header("Location").get(0);
-                        return webClient.get().uri(newUrl).exchange();
-                    } else {
-                        return Mono.just(clientResponse);
-                    }
-                })
-                .block();
-
-        return report.bodyToMono(String.class).block();
+        return null;
     }
+
 }

@@ -16,6 +16,9 @@ public class ProductsResponseDto {
     private int monthprice;
     private int nationalprice;
 
+    public ProductsResponseDto() {
+    }
+
     public ProductsResponseDto(String prompt, String rank, int price, int weekprice, int userprice, int monthprice, int nationalprice) {
         this.prompt = prompt;
         this.rank = rank;

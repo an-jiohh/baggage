@@ -25,6 +25,7 @@ public class ProductsDto {
 
     @Getter
     @Setter
+    @ToString
     public static class Item {
         private String countyname;
         @JsonDeserialize(using = ItemnameDeserializer.class)
