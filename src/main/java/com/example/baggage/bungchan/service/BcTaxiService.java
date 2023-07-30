@@ -1,7 +1,7 @@
 package com.example.baggage.bungchan.service;
 
 import com.example.baggage.dto.TaxiRequestDto;
-import com.example.baggage.dto.TexiPredictResponsDto;
+import com.example.baggage.dto.TaxiPredictResponsDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ import javax.net.ssl.SSLException;
 
 @Service
 @RequiredArgsConstructor
-public class BcTexiService {
+public class BcTaxiService {
     private final ObjectMapper objectMapper;
 
     @Value("${naver.clientId}")
@@ -27,7 +27,7 @@ public class BcTexiService {
     @Value("${naver.clientSecret}")
     private String clientSecret;
 
-    public TexiPredictResponsDto calculateTaxiCost(TaxiRequestDto requestDTO)
+    public TaxiPredictResponsDto calculateTaxiCost(TaxiRequestDto requestDTO)
     {
         TaxiRequestDto.LocationDTO startLocation = requestDTO.getStart();
         TaxiRequestDto.LocationDTO endLocation = requestDTO.getEnd();
@@ -94,7 +94,7 @@ public class BcTexiService {
             int taxiFare = jsonNode.get("route").get("trafast").get(0).get("summary").get("taxiFare").asInt();
 
 
-            TexiPredictResponsDto returnDTO = new TexiPredictResponsDto(duration,taxiFare,distance);
+            TaxiPredictResponsDto returnDTO = new TaxiPredictResponsDto(duration,taxiFare,distance);
             return returnDTO;
 
         } catch (JsonProcessingException e) {
