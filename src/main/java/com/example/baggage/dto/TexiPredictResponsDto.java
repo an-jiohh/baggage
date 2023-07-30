@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class TexiPredict {
+public class TexiPredictResponsDto {
     private  int usetime;
     private  int fee;
     private  double distance;

@@ -1,4 +1,4 @@
-package com.example.baggage.dto;
+package com.example.baggage.domain;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +12,7 @@ import javax.persistence.Table;
 @Setter
 @Entity
 @Table(name = "LODGING")
-public class LodgmentDTO {
+public class Lodgment {
 
     @Id
     @Column(name = "ADDRESS")
