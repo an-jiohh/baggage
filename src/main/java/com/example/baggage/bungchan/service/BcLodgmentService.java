@@ -1,6 +1,6 @@
 package com.example.baggage.bungchan.service;
 
-import com.example.baggage.dto.LodgmentDTO;
+import com.example.baggage.domain.Lodgment;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.transform.Transformers;
 import org.springframework.stereotype.Service;
@@ -16,16 +16,16 @@ public class BcLodgmentService {
     private EntityManager em;
 
 
-    public LodgmentDTO lodgmentCompare(String name, String region){
+    public Lodgment lodgmentCompare(String name, String region){
 
         String query = "SELECT license , address , name FROM LODGING "
                 + "WHERE address LIKE CONCAT('%', :region, '%') AND name = :name";
 
-        List<LodgmentDTO> result = em.createNativeQuery(query)
+        List<Lodgment> result = em.createNativeQuery(query)
                 .setParameter("region", region)
                 .setParameter("name", name)
                 .unwrap(org.hibernate.query.NativeQuery.class)
-                .setResultTransformer(Transformers.aliasToBean(LodgmentDTO.class))
+                .setResultTransformer(Transformers.aliasToBean(Lodgment.class))
                 .getResultList();
 
         if (!result.isEmpty())
@@ -33,9 +33,9 @@ public class BcLodgmentService {
             result.get(0).setCode(0);
             return result.get(0);
         }else {
-            LodgmentDTO lodgmentDTO = new LodgmentDTO();
-            lodgmentDTO.setCode(1);
-            return lodgmentDTO;
+            Lodgment lodgment = new Lodgment();
+            lodgment.setCode(1);
+            return lodgment;
         }
 
     }

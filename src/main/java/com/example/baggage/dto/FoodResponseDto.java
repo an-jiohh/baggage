@@ -28,6 +28,7 @@ public class FoodResponseDto {
         private String shopmenu;
         private int shopprice;
         private String score;
+        private String address;
 
         @Override
         public int compareTo(ShopList o) {
