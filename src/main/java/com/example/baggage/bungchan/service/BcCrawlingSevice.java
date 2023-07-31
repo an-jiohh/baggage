@@ -57,7 +57,6 @@ public class BcCrawlingSevice {
 
         //식당이름, 메뉴이름, 메뉴 가격, 평점, 리스트
         FoodResponseDto.ShopList ShopListeDto = new FoodResponseDto.ShopList();
-
         try {
             String url = "https://place.map.kakao.com/"+id;
             driver.get(url);
@@ -95,12 +94,12 @@ public class BcCrawlingSevice {
                     String menuname = menu_info.get(i).findElement(By.cssSelector("span.loss_word")).getText().replace("추천\n", "");
                     //가격 String to int 처리
                     int menuprice = Integer.parseInt(menu_info.get(i).findElement(By.cssSelector(".price_menu")).getText().replace(",", ""));
-
+//                    System.out.println("id: "+id +"이름 : " + menuname + "  " + "가격 : " + menuprice);
                     if(menuname != null && menuprice != 0) {
                         //메뉴, 가격 둘중 하나가 없어도 추가X
 
                         // 카테고리 가 포함된 메뉴 이름만 추가
-                        if(menuname.contains(Category_name))
+                        if(menuname.contains(Category_name) || menuname.contains(Category_name.substring(1,Category_name.length())) )
                         {
                             ShopListeDto.setShopmenu(menuname);
                             ShopListeDto.setShopprice(menuprice);
@@ -108,7 +107,7 @@ public class BcCrawlingSevice {
                             return ShopListeDto;
                         }
                     }
-//                    System.out.println("이름 : " + menuname + "  " + "가격 : " + menuprice);
+
 
                 } catch (NoSuchElementException e) {
 //                    System.out.println(id+"[메뉴정보]메뉴 or 가격이 없음");
