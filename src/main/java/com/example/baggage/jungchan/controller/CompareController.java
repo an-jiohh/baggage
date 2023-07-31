@@ -69,24 +69,16 @@ public class CompareController {
 
 
         //정찬
-        //임시 데이터 코드
-
-//        List<FoodResponseDto.ShopList> shopLists = new ArrayList<>();
-//        for(int i=5; i>0; i--){
-//            FoodResponseDto.ShopList shop = new FoodResponseDto.ShopList();
-//            shop.setShopname("asd");
-//            shop.setShopmenu("asf");
-//            shop.setShopprice(10000 + (i*1000));
-//            shop.setScore(String.format("%d",i));
-//            shopLists.add(shop);
-//        }
-//        foodResponseDto.setShoplist(shopLists);
-
-
-        //최소가격, 최대가격, 평균가격
-        int max = foodCompareService.findMax(foodResponseDto.getShoplist());
-        int min = foodCompareService.findMin(foodResponseDto.getShoplist());
-        int avg = foodCompareService.findAverage(foodResponseDto.getShoplist());
+        //최소가격, 최대가격, 평균가격 + 값 안들어 왔을 때 예외처리
+        int max = 0;
+        int min = 0;
+        int avg = 0;
+        try {
+            max = foodCompareService.findMax(foodResponseDto.getShoplist());
+            min = foodCompareService.findMin(foodResponseDto.getShoplist());
+            avg = foodCompareService.findAverage(foodResponseDto.getShoplist());
+        }catch (IllegalArgumentException e){
+        }
 
         foodResponseDto.setMaxprice(max);
         foodResponseDto.setMinprice(min);

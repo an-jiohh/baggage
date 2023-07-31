@@ -50,6 +50,10 @@ static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
     }
 
     public int findMax(List<FoodResponseDto.ShopList> shopLists) {
+
+        if (shopLists == null || shopLists.isEmpty()) {
+            throw new IllegalArgumentException("List is null or empty.");
+        }
         int max = shopLists.get(0).getShopprice();
 
         for(int i=0; i <shopLists.size(); i++){
@@ -62,6 +66,10 @@ static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
     }
 
     public int findMin(List<FoodResponseDto.ShopList> shopLists) {
+        if (shopLists == null || shopLists.isEmpty()) {
+            throw new IllegalArgumentException("List is null or empty.");
+        }
+
         int min = shopLists.get(0).getShopprice();
 
         for(int i=0; i <shopLists.size(); i++){
@@ -75,6 +83,10 @@ static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
     }
 
     public int findAverage(List<FoodResponseDto.ShopList> shopLists) {
+        if (shopLists == null || shopLists.isEmpty()) {
+            throw new IllegalArgumentException("List is null or empty.");
+        }
+
         int sum = 0;
         for(int i=0; i <shopLists.size(); i++){
             sum += shopLists.get(i).getShopprice();
