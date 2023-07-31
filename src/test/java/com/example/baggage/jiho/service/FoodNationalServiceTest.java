@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,5 +70,21 @@ class FoodNationalServiceTest {
         for (FoodResponseDto.MobomList mobomList : foodResponseDto.getMobomlist()) {
             System.out.println("mobomList.getHeadmenu() = " + mobomList.getHeadmenu());
         }
+    }
+    
+    @Test
+    void timeTest(){
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String format = now.format(dateTimeFormatter);
+        System.out.println(" = " + format);
+        
+        LocalDateTime localDateTime = now.minusWeeks(1);
+        String localDateTimeformat = localDateTime.format(dateTimeFormatter);
+        System.out.println("localDateTimeformat = " + localDateTimeformat);
+
+        LocalDateTime minusMonths= now.minusMonths(1);
+        String minusMonthsDa = minusMonths.format(dateTimeFormatter);
+        System.out.println("minusMonthsDa = " + minusMonthsDa);
     }
 }
