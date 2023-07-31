@@ -95,20 +95,18 @@ public class BcCrawlingSevice {
                     //가격 String to int 처리
                     int menuprice = Integer.parseInt(menu_info.get(i).findElement(By.cssSelector(".price_menu")).getText().replace(",", ""));
 //                    System.out.println("id: "+id +"이름 : " + menuname + "  " + "가격 : " + menuprice);
+                    //메뉴, 가격 둘중 하나가 없어도 추가X
                     if(menuname != null && menuprice != 0) {
-                        //메뉴, 가격 둘중 하나가 없어도 추가X
 
                         // 카테고리 가 포함된 메뉴 이름만 추가
-                        if(menuname.contains(Category_name) || menuname.contains(Category_name.substring(1,Category_name.length())) )
-                        {
+                        //추후 수정
+                        if (menuname.contains(Category_name) || (Category_name.length() >= 3 && menuname.contains(Category_name.substring(1)))) {
                             ShopListeDto.setShopmenu(menuname);
                             ShopListeDto.setShopprice(menuprice);
                             //메뉴 하나만 추출
                             return ShopListeDto;
-                        }
+                            }
                     }
-
-
                 } catch (NoSuchElementException e) {
 //                    System.out.println(id+"[메뉴정보]메뉴 or 가격이 없음");
                     continue;
