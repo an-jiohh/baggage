@@ -28,8 +28,17 @@ public class ProductsController {
     public ProductsResponseDto compareProducts(@RequestBody ProductsRequestDto request){
         ProductInnerDto productInfo = null;
         if(request.getP_itemcategorycode().equals("500")) {
-            //ProductInnerDto productInfo = productsService.getCowProductInfo(request);
-            return new ProductsResponseDto(); //일단 null 출력
+            try {
+                productInfo = productsService.getCowProductInfo(request);
+            }catch(Exception e){ //no_Data일때 리턴
+                log.info(e.getMessage());
+                log.warn("No_data");
+                ProductsResponseDto responseNodata = new ProductsResponseDto();
+                responseNodata.setPrompt("데이터가 없습니다.");
+                responseNodata.setRank("데이터가 없습니다.");
+                responseNodata.setUserprice(Integer.parseInt(request.getUserprice()));
+                return responseNodata;
+            }
         }else{
             try{
                 productInfo = productsService.getProductInfo(request);

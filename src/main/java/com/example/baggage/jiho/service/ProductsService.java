@@ -5,6 +5,7 @@ import com.example.baggage.dto.ProductsDto;
 import com.example.baggage.dto.ProductsRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 import lombok.RequiredArgsConstructor;
@@ -17,9 +18,9 @@ import reactor.core.publisher.Mono;
 
 import javax.annotation.PostConstruct;
 import java.security.PublicKey;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +32,7 @@ public class ProductsService {
     @Value("${products.p_cert_id}")
     private String pCertId;
     private String url = "https://www.kamis.or.kr/service/price/xml.do";
+
 
     private final ObjectMapper objectMapper;
 
@@ -56,10 +58,6 @@ public class ProductsService {
         cityMap.put("3714", "안동");
         cityMap.put("3814", "창원");
         cityMap.put("3145", "용인");
-    }
-
-    public ProductInnerDto getCowProductInfo(ProductsRequestDto requestDto){
-        return new ProductInnerDto();
     }
 
     public ProductInnerDto getProductInfo(ProductsRequestDto request) throws RuntimeException{
@@ -96,7 +94,7 @@ public class ProductsService {
         return productInnerDto;
     }
 
-    public ProductsDto productsDtoParser(String json){
+    private ProductsDto productsDtoParser(String json){
         ProductsDto productsDto = null;
         try{
             productsDto = objectMapper.readValue(json, ProductsDto.class);
@@ -111,7 +109,7 @@ public class ProductsService {
         return productsDto;
     }
 
-    public String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode, String p_countycode, String p_productclscode){
+    private String getItemInfo(String p_itemcategorycode,String p_itemcode,String p_kindcode, String p_countycode, String p_productclscode){
         WebClient webClient = WebClient
                 .builder()
                 .baseUrl(url)
@@ -136,8 +134,66 @@ public class ProductsService {
         return report;
     }
 
-    public String getCowItemInfo(){
-        return null;
+    public String getCowItemInfo(String p_itemcode,String p_kindcode){
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime minusMonths= now.minusMonths(1);
+
+        String now_format = now.format(dateTimeFormatter);
+        String month_format = minusMonths.format(dateTimeFormatter);
+
+        WebClient webClient = WebClient
+                .builder()
+                .baseUrl(url)
+                .build();
+        String report = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("")
+                        .queryParam("action", "periodProductList") //지역별 품목별 도.소매가격정보 API 선택
+                        .queryParam("p_startday", month_format)
+                        .queryParam("p_endday", now_format)
+                        .queryParam("p_cert_key", pCertKey) //인증 key
+                        .queryParam("p_cert_id", pCertId) //인증자 id
+                        .queryParam("p_returntype", "json") //return type
+                        .queryParam("p_itemcode", p_itemcode) //품목코드
+                        .queryParam("p_kindcode", p_kindcode) //품종코드
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        return report;
+    }
+
+
+    public ProductInnerDto getCowProductInfo(ProductsRequestDto request) throws Exception {
+        String cowItemInfo = getCowItemInfo(request.getP_itemcode(), request.getP_kindcode());
+        JsonNode jsonNode = objectMapper.readTree(cowItemInfo);
+        JsonNode jsonNode1 = jsonNode.get("data").get("item");
+        List<JsonNode> items = new ArrayList<>();
+        Iterator<JsonNode> elements = jsonNode1.elements();
+        while (elements.hasNext()) {
+            JsonNode next = elements.next();
+            if (next.get("countyname").asText().equals("전국")){
+                items.add(next);
+            }
+        }
+
+        int price = Integer.parseInt(items.get(items.size()-1).get("price").asText().replace(",", "").replace("-", ""));
+        int weekPrice =  Integer.parseInt(items.get(items.size()-7).get("price").asText().replace(",", "").replace("-", ""));
+        int monthPrice =  Integer.parseInt(items.get(0).get("price").asText().replace(",", "").replace("-", ""));
+        int nationalPrice = Integer.parseInt(items.get(items.size()-1).get("price").asText().replace(",", "").replace("-", ""));
+
+        ProductInnerDto productInnerDto = new ProductInnerDto();
+        productInnerDto.setUserprice(Integer.parseInt(request.getUserprice()));
+
+        productInnerDto.setProductName(items.get(0).get("itemname").asText());
+        productInnerDto.setPrice(price);
+        productInnerDto.setWeekprice(weekPrice);
+        productInnerDto.setMonthprice(monthPrice);
+        productInnerDto.setNationalprice(nationalPrice);
+
+        return productInnerDto;
     }
 
 }
