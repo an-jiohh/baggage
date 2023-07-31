@@ -50,7 +50,7 @@ public class FoodResponseDto {
     @Setter
     public static class MobomList {
         private String shopname;
-        private String adress;
+        private String address;
         private String headmenu;
     }
 

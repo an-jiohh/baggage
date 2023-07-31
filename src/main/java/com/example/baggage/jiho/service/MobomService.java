@@ -28,7 +28,7 @@ public class MobomService {
         for (Mobom mobom : mobomList) {
             if (count++ == 5) break;
             FoodResponseDto.MobomList mobomshop = new FoodResponseDto.MobomList();
-            mobomshop.setAdress(mobom.getADDRESS());
+            mobomshop.setAddress(mobom.getADDRESS());
             mobomshop.setHeadmenu(mobom.getHEADMENU());
             mobomshop.setShopname(mobom.getSHOPNAME());
             returnLists.add(mobomshop);
