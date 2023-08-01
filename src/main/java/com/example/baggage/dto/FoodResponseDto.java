@@ -15,6 +15,7 @@ public class FoodResponseDto {
     private int minprice;
     private int nationalprice;
     private String prompt;
+    private String rank;
 
     private List<ShopList> shoplist;
 

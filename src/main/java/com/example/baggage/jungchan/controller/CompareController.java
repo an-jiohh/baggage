@@ -102,6 +102,10 @@ public class CompareController {
         String address = "0000 000 000"; //없을 경우를 대비 실존하지 않는 값 대입
         address = locationService.getRegion123Merge(kakaoAddressDto);
 
+        //rank 값 넣기
+        String rank = foodCompareService.compareRank(foodResponseDto,foodRequestDto.getPrice());
+        foodResponseDto.setRank(rank);
+
         List<FoodResponseDto.MobomList> mobomLists = mobomService.getMobomData(address, foodRequestDto.getName());
         foodResponseDto.setMobomlist(mobomLists);
 
