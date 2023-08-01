@@ -3,6 +3,7 @@ package com.example.baggage.jungchan.service.gpt;
 import com.example.baggage.dto.FoodRequestDto;
 import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.dto.KaKaoResponseDto;
+import com.example.baggage.dto.ProductInnerDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -49,6 +50,8 @@ static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
         Collections.sort(foodResponseDto.getShoplist());
     }
 
+
+
     public int findMax(List<FoodResponseDto.ShopList> shopLists) {
 
         if (shopLists == null || shopLists.isEmpty()) {
@@ -94,4 +97,35 @@ static final String url = "https://dapi.kakao.com/v2/local/search/keyword.json";
         return sum / shopLists.size();
     }
 
+
+    public String compareRank(FoodResponseDto productInnerDto, int price) {
+
+        int avgPrice = (productInnerDto.getAvgprice() + productInnerDto.getNationalprice()) / 2;
+        int userPrice = price;
+
+        double priceGap = userPrice - avgPrice;
+        double priceGapPercentage = (priceGap / avgPrice) * 100;
+
+        String rank = null;
+
+        //비교 로직
+        if (priceGapPercentage < 0) {
+            //저렴
+            rank = "저렴";
+        } else if (0 <= priceGapPercentage && priceGapPercentage < 10) {
+            //적정
+            rank = "적정";
+        } else if (10 <= priceGapPercentage && priceGapPercentage < 20) {
+            //의심
+            rank = "의심";
+        } else if (20 <= priceGapPercentage && priceGapPercentage < 30) {
+            //위험
+            rank = "위험";
+        } else {
+            //매우 위험
+            rank = "매우 위험";
+        }
+
+        return rank;
+    }
 }

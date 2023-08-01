@@ -20,6 +20,7 @@ public class ProductCompareService {
 
 
     private final ChatgptService chatgptService;
+    private final GptService gptService;
 
 
     public ProductsResponseDto compareService(ProductInnerDto productInnerDto) {
@@ -27,7 +28,6 @@ public class ProductCompareService {
         String rank = compareRank(productInnerDto);
 
         //2. gpt 판단(prompt) 로직
-        GptService gptService = new GptService();
         String inputPrompt = gptService.createProductPrompt(productInnerDto);
         String resultPrompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user", inputPrompt)));
 
@@ -42,7 +42,7 @@ public class ProductCompareService {
         int avgPrice = (productInnerDto.getPrice() + productInnerDto.getWeekprice() + productInnerDto.getMonthprice()) / 3;
         int userPrice = productInnerDto.getUserprice();
 
-        int priceGap = userPrice - avgPrice;
+        double priceGap = userPrice - avgPrice;
         double priceGapPercentage = (priceGap / avgPrice) * 100;
 
         String rank = null;
