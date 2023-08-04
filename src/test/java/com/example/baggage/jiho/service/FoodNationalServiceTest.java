@@ -4,6 +4,7 @@ import com.example.baggage.domain.Mobom;
 import com.example.baggage.dto.FoodRequestDto;
 import com.example.baggage.dto.FoodResponseDto;
 import com.example.baggage.dto.KakaoAddressDto;
+import com.example.baggage.dto.KakaoBuildDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,14 @@ class FoodNationalServiceTest {
     void kakaoAdressTest(){
         KakaoAddressDto kakaoAddressDto = locationService.coordinateToAddress("37.5546", "126.9754");
         System.out.println(kakaoAddressDto.toString());
+    }
+
+    @Test
+    void kakaoBuildTest(){
+        KakaoBuildDto kakaoBuildDto = locationService.coordinateToBuildName("37.5546", "126.9754");
+        System.out.println(kakaoBuildDto.toString());
+        String regionBuilding = locationService.getRegionBuilding(kakaoBuildDto);
+        System.out.println("regionBuilding = " + regionBuilding);
     }
 
     @Test
