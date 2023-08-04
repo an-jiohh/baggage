@@ -42,6 +42,7 @@ public class BcLodgmentService {
             return result.get(0);
         }else {
             Lodgment lodgment = new Lodgment();
+            lodgment.setNAME(name);
             lodgment.setCode(1);
             return lodgment;
         }
@@ -83,13 +84,17 @@ public class BcLodgmentService {
             List<LodgmentResponsDto.LodgmentList> lodgmentList = new ArrayList<>();
             for (LodgmentRequestDto.Item item : lodgmentRequestDto.getResponse().getBody().getItems().getItem()) {
                 LodgmentResponsDto.LodgmentList lodgment = new LodgmentResponsDto.LodgmentList();
+
                 lodgment.setAdd1(item.getAddr1());
+
+
                 lodgment.setAdd2(item.getAddr2());
                 lodgment.setTitle(item.getTitle());
                 lodgmentList.add(lodgment);
             }
             lodgmentResponseDto.setCode(0);
             lodgmentResponseDto.setLodgmentlist(lodgmentList);
+//            System.out.println("return !!! : " + lodgmentResponseDto.toString());
             return lodgmentResponseDto;
         } catch (JsonProcessingException e) {
             LodgmentResponsDto lodgmentResponseDto = new LodgmentResponsDto();
