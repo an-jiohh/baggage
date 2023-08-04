@@ -11,4 +11,6 @@ public class TaxiPredictResponsDto {
     private  int usetime;
     private  int fee;
     private  double distance;
+    private String startaddress;
+    private String endaddress;
 }
