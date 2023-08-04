@@ -74,7 +74,7 @@ public class LocationService {
             KakaoBuildDto.Document document = kakaoBuildDto.getDocuments()[0];
             if(document.getRoad_address() != null){
                 String buildingName = document.getRoad_address().getBuilding_name();
-                address = String.format(address);
+                address = String.format(buildingName);
             }
             else {
                 String region3depthName = document.getAddress().getRegion_3depth_name();
