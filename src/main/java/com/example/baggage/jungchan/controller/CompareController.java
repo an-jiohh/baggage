@@ -48,7 +48,9 @@ public class CompareController {
         //매핑된 값을 chatGPT에게 넘겨줌
         String parameter =  gptService.createTaxiPrompt(realDistance, realFee, realUsetime, predictDistance, predictFee, predictUsetime);
 
-        String prompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user",parameter)));
+        String prompt = chatgptService.multiChat(Arrays.asList(
+                new MultiChatMessage("system", "200자 이내로 답변, 답변 형식은 최대한 정중한 말투로 중립을 지키면서 답변을 해줘"),
+                new MultiChatMessage("user",parameter)));
 
         return new CompareResponse(prompt);
     }
@@ -93,7 +95,9 @@ public class CompareController {
 
         //gpt 에게 평가 (return prompt)
         String prompt = gptService.createFoodPrompt(foodResponseDto,foodRequestDto.getPrice());   //nationalprice, maxprice, minprice
-        String resultPrompt = chatgptService.multiChat(Arrays.asList(new MultiChatMessage("user",prompt)));
+        String resultPrompt = chatgptService.multiChat(Arrays.asList(
+                new MultiChatMessage("system","200자 이내로 답변, 답변 형식은 최대한 정중한 말투로 중립을 지키면서 기준에 의해 판단해서 답변을 해줘(내가 라는 말 사용 금지, 제가로 대체)"),
+                new MultiChatMessage("user",prompt)));
 
         foodResponseDto.setPrompt(resultPrompt);
 

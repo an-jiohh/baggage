@@ -31,11 +31,15 @@ public class ReviewRepository {
     }
 
     public double getAvg(String region){
-        double region1 = em.createQuery("select AVG(m.rate) from Review m where m.region = :region",
-                        Double.class)
-                .setParameter("region", region)
-                .getSingleResult();
-
+        double region1;
+        try{
+            region1 = em.createQuery("select AVG(m.rate) from Review m where m.region = :region",
+                            Double.class)
+                    .setParameter("region", region)
+                    .getSingleResult();
+        }catch (Exception e){
+            region1 = 0;
+        }
 
         return region1;
     }
