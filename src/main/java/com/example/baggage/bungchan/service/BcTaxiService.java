@@ -1,7 +1,9 @@
 package com.example.baggage.bungchan.service;
 
+import com.example.baggage.dto.KakaoBuildDto;
 import com.example.baggage.dto.TaxiRequestDto;
 import com.example.baggage.dto.TaxiPredictResponsDto;
+import com.example.baggage.jiho.service.LocationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +22,7 @@ import javax.net.ssl.SSLException;
 @RequiredArgsConstructor
 public class BcTaxiService {
     private final ObjectMapper objectMapper;
-
+    private  final LocationService locationService;
     @Value("${naver.clientId}")
     private String clientId;
 
@@ -93,8 +95,13 @@ public class BcTaxiService {
             //택시 요금
             int taxiFare = jsonNode.get("route").get("trafast").get(0).get("summary").get("taxiFare").asInt();
 
+            KakaoBuildDto startkakaoBuildDto = locationService.coordinateToBuildName(startLocation.getLatitude(), startLocation.getLongitude());
+            String startBuilding = locationService.getRegionBuilding(startkakaoBuildDto);
 
-            TaxiPredictResponsDto returnDTO = new TaxiPredictResponsDto(duration,taxiFare,distance);
+            KakaoBuildDto endkakaoBuildDto = locationService.coordinateToBuildName(endLocation.getLatitude(), endLocation.getLongitude());
+            String endBuilding = locationService.getRegionBuilding(endkakaoBuildDto);
+
+            TaxiPredictResponsDto returnDTO = new TaxiPredictResponsDto(duration,taxiFare,distance,startBuilding,endBuilding);
             return returnDTO;
 
         } catch (JsonProcessingException e) {
